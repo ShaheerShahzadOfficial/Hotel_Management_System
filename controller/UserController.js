@@ -8,25 +8,18 @@ import cloudinary from "cloudinary"
 
 
 const RegisterUser = async (req, res, next) => {
-    let { name, email, password } = req.body
+    let { name, email, password,role } = req.body
 
-
-    let public_id;
-    let secure_url;
-    const file = req.body.avatar
-
-    const myCloud = await cloudinary.v2.uploader.upload(file, {
-        folder: "HotelManagementAvatar",
-        width: 150,
-         crop: "scale",
-    })
-        .then((result) => {
-            console.log(result)
-            secure_url = result.secure_url
-            public_id = result.public_id
-        }).catch((err) => {
-            console.log(err, "//////////////")
-        });
+// Finding User with Email    
+const findUserWithEmail = await User.find({email}) 
+if(findUser){
+    return res.status(500).json({msg:"User Already Exist with this Email"})
+}
+// Finding User with name
+const findUserWithName = await User.find({name}) 
+if(findUserWithName){
+    return res.status(500).json({msg:"User Already Exist with this Name"})
+}
 
     const SALT_ROUND = 10
     await bcrypt.hash(password, SALT_ROUND, async (err, hash) => {
@@ -38,11 +31,8 @@ const RegisterUser = async (req, res, next) => {
             )
         } else {
             const user = await User.create({
-                name, email, password: hash,
-                avatar: {
-                    public_id: public_id,
-                    url: secure_url,
-                }
+                name, email, password: hash,role
+               
             }).then((result) => {
                 res.status(201).json({
                     success: true,
@@ -55,11 +45,6 @@ const RegisterUser = async (req, res, next) => {
                     message: "😲😲😲 Registeration Successful 😲😲😲 "
                 })
             }).catch((err) => {
-                if (err.name === "MongoServerError") {
-                    return res.status(500).json({
-                        message: "User All Ready Exist"
-                    })
-                }
                 res.status(500).json({
                     message: err.message
                 })
@@ -83,8 +68,11 @@ const Login = async (req, res, next) => {
         )
     }
 
-
-    const userFound = await User.findOne({ email }).select("+password")
+    const findingUser = await User.findOne({ email })
+if(!findingUser){
+    return res.status(500).json({msg:"User Not Found"})
+}
+    const userFound = await User.findOne({ email })
         .then(async (user) => {
             bcrypt.compare(password, user.password, (error, result) => {
                 if (result) {
@@ -164,6 +152,11 @@ const Logout = async (req, res, next) => {
 const GetUserDetail = async (req, res, next) => {
 
     const user = await User.findById(req.user.id)
+    if(!user){
+        res.status(500).json({
+            msg:"Please Login"
+        })
+    }
     res.status(200).json({
         success: true,
         user

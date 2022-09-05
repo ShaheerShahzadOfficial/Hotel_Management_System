@@ -6,7 +6,9 @@ function checkToken(req, res, next) {
     const { authToken } = req.cookies
 
     if (!authToken) {
-        return next(new ErrorHandler("Please Login to access this resource", 401))
+        return res.status(401).json({
+            Message: "Please Login To Continue"
+        })
     }
 
     //verify token which is in cookie value
