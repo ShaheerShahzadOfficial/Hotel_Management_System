@@ -12,7 +12,7 @@ const RegisterUser = async (req, res, next) => {
 
 // Finding User with Email    
 const findUserWithEmail = await User.find({email}) 
-if(findUser){
+if(findUserWithEmail){
     return res.status(500).json({msg:"User Already Exist with this Email"})
 }
 // Finding User with name
@@ -93,8 +93,8 @@ if(!findingUser){
                         expires: new Date(
                             Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
                         httpOnly: false,
-                        maxAge: 120 * 60 * 60 * 1000,
-                        secure: true
+                        // maxAge: 120 * 60 * 60 * 1000,
+                        // secure: true
                     })
 
 

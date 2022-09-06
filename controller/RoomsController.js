@@ -29,7 +29,8 @@ for (let i = 0; i < images.length; i++) {
 req.body.Images = imagesLinks;
 
 
-req.body.User = req.user.name
+req.body.Hotel = req.user.id
+req.body.HotelName = req.user.name
 
  await Room.create(req.body).then((result) => {
     res.status(201).json({
@@ -52,7 +53,7 @@ const getAllRooms=async(req,res,next)=>{
     let { pageNumber } = req.query;
 
 
-    let skipCount = (pageNumber - 1) * studentPerPage;
+    let skipCount = (pageNumber - 1) * resultPerPage;
     let allRooms = await Room.find().limit(Number(resultPerPage)).skip(skipCount);
 
 
@@ -63,6 +64,18 @@ const getAllRooms=async(req,res,next)=>{
     })
 }
 
+
+const getAllRoomsPerManager=async(req,res,next)=>{
+
+   
+    let allRooms = await Room.find({Hotel:req.user._id});
+
+
+
+    res.status(200).json({
+        allRooms
+    })
+}
 
 const UpdateRoom=async(req,res,next)=>{
    const RoomUpdate =  await Room.findByIdAndUpdate({_id:req.params.id},{
@@ -124,5 +137,6 @@ export {
     getAllRooms,
     UpdateRoom,
     DeleteRoom,
-    UpdateRoomStatus
+    UpdateRoomStatus,
+    getAllRoomsPerManager
 }

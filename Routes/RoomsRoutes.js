@@ -5,7 +5,8 @@ import {
     getAllRooms,
     UpdateRoom,
     DeleteRoom,
-    UpdateRoomStatus
+    UpdateRoomStatus,
+    getAllRoomsPerManager
 } from "../controller/RoomsController.js"
 
 import {checkToken} from "../middleWare/Auth.js"
@@ -15,7 +16,7 @@ RoomRoutes.route("/AllRooms").get(checkToken,getAllRooms)
 RoomRoutes.route("/UpdateRoom").put(checkToken,UpdateRoom)
 RoomRoutes.route("/DeleteRoom").delete(checkToken,DeleteRoom)
 RoomRoutes.route("/UpdateRoom").put(checkToken,UpdateRoomStatus)
-
+RoomRoutes.route("/manager/rooms").put(checkToken, getAllRoomsPerManager)
 
 
 
